@@ -7,19 +7,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 # --- base packages ---------------------------------------------------------
 # ca-certificates/wget/unzip/nginx : original stack
 # openssh + openssh-server        : real sshd that SSH-WS tunnels into
-# python3 + py3-pip               : runs ssh_ws.py (WS<->TCP bridge)
+# python3                         : runs ssh_ws.py (pure-stdlib WS<->TCP bridge)
 # supervisor                      : process manager (replaces the old `&` chaining)
 # tzdata                          : so ENV TZ actually takes effect
 RUN apk add --no-cache \
         ca-certificates wget unzip nginx tzdata \
         openssh openssh-server \
-        python3 py3-pip \
+        python3 \
         supervisor \
     && cp /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo "$TZ" > /etc/timezone
-
-# websockets ships musllinux wheels (no compiler needed on Alpine)
-RUN pip3 install --no-cache-dir --break-system-packages "websockets>=13,<16"
 
 # --- xray-core ---------------------------------------------------------
 RUN wget -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
