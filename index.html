@@ -1,0 +1,2853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>𝐇𝐀𝐏𝐫𝐨𝐱𝐲 𝟏𝟐 𝐢𝐧 𝟏 𝐌𝐮𝐥𝐭𝐢 𝐩𝐫𝐨𝐭𝐨𝐜𝐨𝐥 𝐒𝐞𝐫𝐯𝐞𝐫</title>
+    <style>
+        :root {
+            --white: #ffffff;
+            --glow: rgba(100, 200, 255, 0.6);
+            --stroke-radiant: rgba(0, 0, 0, 0.9);
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --shadow: 0 0 25px rgba(100, 200, 255, 0.25);
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --bg-base: #0b0f14;
+            --bg-radiant: radial-gradient(circle at top left, #2a0845 0%, #0a0118 40%, #000000 100%);
+            --graph-cyan: #00f5ff;
+            --status-green: #10b981;
+            --status-green-soft: rgba(16, 185, 129, 0.08);
+            --status-green-border: rgba(16, 185, 129, 0.25);
+            --status-text: #d1fae5;
+            --status-yellow: #eab308;
+            --status-red: #ef4444;
+            --log-bg: rgba(255, 255, 255, 0.08);
+            --log-border: rgba(255, 255, 255, 0.15);
+            --log-text: #c0e7ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        *:not(video):not(audio):not(svg):not(path):not(.loading-text):not(.center-loading-text):not(.fetch-loading-text) {
+            text-shadow:
+                0 0 0.5px var(--stroke-radiant),
+                0 0 1px var(--stroke-radiant);
+        }
+
+        html, body {
+    width: 100%;
+    height: 100%;
+            overflow: hidden;
+            color: var(--white);
+            background-color: var(--bg-base);
+            touch-action: none;
+            -webkit-text-size-adjust: none;
+text-size-adjust: none;
+        }
+
+.skeleton-container {
+    width:540px;
+    max-width:100%;
+    height:100%;
+    padding:8px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+
+.skeleton-glass {
+    background:
+        rgba(255,255,255,0.06);
+
+    border:1px solid rgba(255,255,255,0.12);
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    position:relative;
+}
+
+
+.skeleton-glass::before,
+.skeleton-item::before {
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.18),
+        transparent
+    );
+
+    transform:translateX(-100%);
+
+    animation:skeletonSweep 1.5s infinite;
+
+}
+
+
+
+.skeleton-top {
+
+    height:326px;
+
+    display:grid;
+
+    grid-template-columns:
+    1.17fr 1fr;
+
+    gap:8px;
+
+}
+
+
+
+.skeleton-status {
+
+    padding:14px;
+
+}
+
+
+
+.skeleton-title {
+
+    width:140px;
+    height:18px;
+
+    border-radius:6px;
+
+    margin-bottom:15px;
+
+}
+
+
+
+.skeleton-line {
+
+    width:90%;
+    height:10px;
+
+    border-radius:5px;
+
+    margin:10px 0;
+
+}
+
+
+
+.skeleton-line.short {
+
+    width:60%;
+
+}
+
+
+
+.skeleton-graph {
+
+    height:70px;
+
+    margin-top:auto;
+
+    border-radius:8px;
+
+}
+
+
+
+.skeleton-log {
+
+    height:100%;
+
+}
+
+
+
+.skeleton-main {
+
+    flex:1;
+
+    padding:14px;
+
+}
+
+
+
+.skeleton-card-row {
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+    gap:5px;
+
+    margin:15px 0;
+
+}
+
+
+.skeleton-card {
+
+    height:50px;
+
+    border-radius:7px;
+
+}
+
+
+
+.skeleton-dropdown {
+
+    height:40px;
+
+    margin-top:10px;
+
+}
+
+
+
+.skeleton-config {
+
+    height:100px;
+
+    margin-top:12px;
+
+}
+
+
+.skeleton-button {
+
+    height:38px;
+
+    margin-top:10px;
+
+}
+
+
+.skeleton-item {
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+    rgba(255,255,255,0.07);
+
+}
+
+
+
+@keyframes skeletonSweep {
+
+    0% {
+        transform:translateX(-120%);
+    }
+
+    100% {
+        transform:translateX(120%);
+    }
+
+}
+        .page {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 1.2s ease-in-out, visibility 1.2s ease-in-out;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-color: var(--bg-base);
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        #page1 {
+            background: radial-gradient(circle at top left, #2a0845 0%, #0a0118 40%, #000000 100%);
+        }
+
+        .container {
+    width: min(90%, 320px);
+    max-width: 320px;
+    min-width: 0;
+}
+
+        .loading-text{
+    position:relative;
+    font-size:18px;
+    font-weight:bold;
+    color:#7f8c99;
+    overflow:hidden;
+    white-space:nowrap;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+}
+
+.loading-text::before{
+    content:attr(data-text);
+    position:absolute;
+    inset:0;
+    color:transparent;
+
+    background:linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 15%,
+        rgba(255,255,255,.98) 50%,
+        transparent 85%,
+        transparent 100%
+    );
+
+    background-size:180px 100%;
+    background-repeat:no-repeat;
+    background-position:-180px 0;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:textLightSweep 1.9s linear infinite;
+
+    pointer-events:none;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+}
+
+@keyframes textLightSweep{
+    0%{
+        background-position:-180px 0;
+    }
+
+    100%{
+        background-position:calc(100% + 180px) 0;
+    }
+}
+
+        .success-title::before {
+    content: "Fetched Server Hosts Successfully";
+    position: absolute;
+    inset: 0;
+    color: transparent;
+
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,.95) 50%,
+        transparent 100%
+    );
+
+    background-size: 220px 100%;
+    background-repeat: no-repeat;
+    background-position: -220px 0;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    animation: greenSweep 2.5s linear infinite;
+
+    pointer-events: none;
+    text-shadow: none !important;
+    -webkit-text-stroke: 0 !important;
+    filter: none !important;
+}
+text-shadow: none !important;
+-webkit-text-stroke: 0 !important;
+filter: none !important;
+    );
+    background-size:220px 100%;
+    background-repeat:no-repeat;
+    background-position:-220px 0;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:greenSweep 2.5s linear infinite;
+    pointer-events:none;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+}
+
+        @keyframes sweep{
+            from{
+                background-position:-300px;
+            }
+            to{
+                background-position:600px;
+            }
+        }
+
+        .dots::after{
+            content:"";
+            animation:dots 1.5s steps(4,end) infinite;
+        }
+
+        @keyframes dots{
+            0%{content:"";}
+            25%{content:".";}
+            50%{content:"..";}
+            75%{content:"...";}
+            100%{content:"";}
+        }
+
+        .init-line{
+            margin-top:18px;
+            width:100%;
+            height:3px;
+            background:#222;
+            border-radius:3px;
+            overflow:hidden;
+        }
+
+        .init-line::before{
+            content:"";
+            display:block;
+            width:0%;
+            height:100%;
+            background:#fff;
+            box-shadow:0 0 10px #fff;
+            animation:loading 7s linear forwards;
+        }
+
+        @keyframes loading{
+            from{
+                width:0%;
+            }
+            to{
+                width:100%;
+            }
+        }
+        
+       #page3 {
+    background: var(--bg-radiant);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+}
+
+       .top-container {
+    width: 100%;
+    max-width: 540px;
+    padding: 0;
+    margin: 0 auto;
+    height: 326px;
+    flex: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1.17fr) minmax(0, 1fr);
+    gap: 8px;
+    box-sizing: border-box;
+}
+        .system-status-panel {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 12px 10px 10px;
+    overflow: hidden;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+}
+        .status-header{
+            font-size:.9rem;
+            margin-bottom:8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+       .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: slowBeat 7.1s infinite ease-in-out;
+        }
+        .status-indicator.good {
+
+    background:#00ff9d;
+
+    box-shadow:
+    0 0 5px #00ff9d,
+    0 0 15px #00ff9d,
+    0 0 30px #00ff9d;
+
+}
+        .status-indicator.medium {
+            background: var(--status-yellow);
+            box-shadow: 0 0 8px var(--status-yellow);
+        }
+        .status-indicator.high {
+            background: var(--status-red);
+            box-shadow: 0 0 8px var(--status-red);
+        }
+        @keyframes slowBeat {
+            0%,100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.35); opacity: 1; }
+        }
+        .status-row{
+            font-size:.85rem;
+            line-height:1.4;
+            margin:3px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 4px;
+        }
+        .status-label {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.status-value {
+    color:#f8fafc;
+    font-weight:600;
+    letter-spacing:0.5px;
+
+    text-shadow:
+        0 0 2px #ffffff,
+        0 0 6px rgba(255,255,255,.35);
+
+    font-family:
+        "Courier New",
+        monospace;
+}
+         .status-value {
+    color: #ffffff;
+    font-weight: 500;
+    text-shadow: 0 0 2px rgba(255,255,255,0.5);
+}
+
+
+.red-label {
+    color: #ff1744;
+    text-shadow:
+        0 0 3px rgba(255, 23, 68, 0.8),
+        0 0 7px rgba(255, 23, 68, 0.45);
+
+    animation: cyberRedGlow 8s infinite ease-in-out;
+}
+
+@keyframes cyberRedGlow {
+
+    0%,
+    50% {
+        text-shadow:
+            0 0 3px rgba(255, 23, 68, 0.8),
+            0 0 7px rgba(255, 23, 68, 0.45);
+    }
+
+    65% {
+        text-shadow:
+            0 0 2px rgba(255, 23, 68, 0.35),
+            0 0 4px rgba(255, 23, 68, 0.2);
+    }
+
+    70%,
+    87% {
+        text-shadow: none;
+    }
+
+    100% {
+        text-shadow:
+            0 0 3px rgba(255, 23, 68, 0.8),
+            0 0 7px rgba(255, 23, 68, 0.45);
+    }
+}
+        .status-good { color: var(--status-green); font-weight: 500; }
+        .status-wait { color: var(--status-yellow); }
+        .status-high { color: var(--status-red); 
+            text-shadow: 0 0 4px var(--status-red);
+            animation: softRadiant 2s infinite ease-in-out;
+        }
+        @keyframes softRadiant {
+            0%,100% { text-shadow: 0 0 2px var(--status-red); }
+            50% { text-shadow: 0 0 6px var(--status-red); }
+        }
+        .visitor-count {
+            color: var(--status-green);
+            font-weight: 600;
+        }
+        .graph-container {
+    height: 90px;
+    margin-top: auto;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    padding: 0 2px 4px;
+    position: relative;
+    overflow: visible;
+}
+       .graph-bar {
+    flex: 1;
+    min-height: 3px;
+    height: 10px;
+
+    border-radius: 3px 3px 1px 1px;
+
+    background: linear-gradient(
+        180deg,
+        #00f5ff 0%,
+        #00c3ff 55%,
+        rgba(0,245,255,0.35) 100%
+    );
+
+    box-shadow:
+        0 0 5px rgba(0,245,255,0.65),
+        0 0 10px rgba(0,245,255,0.25);
+
+    transition:
+        height 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.4s ease,
+        box-shadow 0.4s ease;
+
+    opacity: 0.75;
+}
+
+.graph-bar:nth-child(4),
+.graph-bar:nth-child(5) {
+    opacity: 1;
+
+    box-shadow:
+        0 0 7px rgba(0,245,255,0.8),
+        0 0 14px rgba(0,245,255,0.3);
+}
+        .network-monitor-label{
+            font-size:.67rem;
+            margin-top: 2px;
+            text-align: center;
+        }
+        .log-panel {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 10px 10px;
+    overflow: hidden;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    font-family: 'Courier New', Consolas, monospace;
+}
+        .log-header{
+    font-size:.75rem;
+    margin-bottom:4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    text-align:center;
+}
+
+.clear-log-btn{
+    position:relative;
+    padding:3px 8px;
+    background:transparent;
+    border:1px solid rgba(0,245,255,.18);
+    border-radius:4px;
+    color:#94a3b8;
+    font-size:9px;
+    line-height:1;
+    cursor:pointer;
+    overflow:hidden;
+    transition:
+        color .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.clear-log-btn::before{
+    content:"";
+    position:absolute;
+    top:-100%;
+    left:0;
+    width:100%;
+    height:100%;
+    background:linear-gradient(
+        180deg,
+        transparent,
+        rgba(0,245,255,.45),
+        transparent
+    );
+    pointer-events:none;
+}
+
+.clear-log-btn:hover{
+    color:#00f5ff;
+    border-color:rgba(0,245,255,.7);
+    box-shadow:
+        0 0 6px rgba(0,245,255,.25),
+        inset 0 0 6px rgba(0,245,255,.08);
+}
+
+.clear-log-btn:active{
+    transform:scale(.94);
+}
+
+.clear-log-btn.clearing{
+    color:#00f5ff;
+    border-color:#00f5ff;
+    box-shadow:
+        0 0 10px rgba(0,245,255,.5),
+        inset 0 0 8px rgba(0,245,255,.12);
+}
+
+.clear-log-btn.clearing::before{
+    animation:clearScan .45s linear;
+}
+
+@keyframes clearScan{
+    0%{
+        top:-100%;
+    }
+    100%{
+        top:100%;
+    }
+}
+
+.clear-log-btn:hover{
+    color:#fff;
+    border-color:rgba(100,200,255,.6);
+    box-shadow:0 0 8px rgba(100,200,255,.35);
+}
+
+.clear-log-btn:active{
+    transform:scale(.94);
+}
+.log-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    width: 100%;
+}
+
+.info-btn {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 50%;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: .2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.info-btn:hover {
+    color: #fff;
+    border-color: rgba(0,245,255,.7);
+    box-shadow: 0 0 7px rgba(0,245,255,.35);
+}
+
+.info-btn:active {
+    transform: scale(.9);
+}
+
+.info-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(4px);
+    z-index: 20000;
+}
+
+.info-popup.active {
+    display: flex;
+}
+
+.info-box {
+    position: relative;
+    width: 360px;
+    max-width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 22px 20px;
+    background: #101722;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.5);
+    animation: infoPopup .2s ease;
+}
+
+@keyframes infoPopup {
+    from {
+        opacity: 0;
+        transform: scale(.96) translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.info-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: #8b95a5;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.info-close:hover {
+    color: #fff;
+}
+
+.info-content {
+    padding-right: 8px;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.info-content h2 {
+    margin: 0 0 12px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.info-content p {
+    margin: 0 0 12px;
+}
+
+.info-content .risk {
+    color: #facc15;
+}
+
+.info-content .dev {
+    margin-top: 16px;
+    color: #94a3b8;
+}
+
+.info-content .dev strong {
+    color: #fff;
+}
+.log-bottom{
+    flex:none;
+    width:100%;
+    height:20px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:flex-start;
+    padding-top:3px;
+}
+
+.log-divider{
+    display:block;
+    width:100%;
+    height:1px;
+    margin:2px 0 4px;
+    background:rgba(255,255,255,0.12);
+}
+
+.log-content.clearing{
+    animation:cyberLogClear .45s ease-out forwards;
+}
+
+@keyframes cyberLogClear{
+    0%{
+        opacity:1;
+        transform:translateX(0);
+        filter:none;
+    }
+
+    25%{
+        opacity:.75;
+        transform:translateX(1px);
+        filter:
+            brightness(1.8)
+            drop-shadow(0 0 4px #00f5ff);
+    }
+
+    50%{
+        opacity:.45;
+        transform:translateX(-1px);
+        filter:
+            brightness(1.4)
+            drop-shadow(0 0 7px #00f5ff);
+    }
+
+    75%{
+        opacity:.15;
+        transform:translateX(0);
+        filter:
+            brightness(2)
+            drop-shadow(0 0 10px #00f5ff);
+    }
+
+    100%{
+        opacity:0;
+        transform:translateY(-3px);
+        filter:none;
+    }
+}
+.log-content{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    font-size:.75rem;
+    line-height:1.25;
+    text-align:left;
+    padding-right:3px;
+}
+      
+.log-content::-webkit-scrollbar{
+    width:3px;
+}
+
+.log-content::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.log-content::-webkit-scrollbar-thumb{
+    background:rgba(255,255,255,.25);
+    border-radius:3px;
+}
+
+.log-content::-webkit-scrollbar-thumb:hover{
+    background:rgba(100,200,255,.6);
+}
+        .log-entry{
+            padding:1px 0;
+            margin:0;
+            text-align:left;
+        }
+         .ping-green {
+    color: #10b981;
+    text-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+}
+
+.ping-yellow {
+    color: #eab308;
+    text-shadow: 0 0 4px rgba(234, 179, 8, 0.5);
+}
+
+.ping-red {
+    color: #ef4444;
+    text-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+}
+        .glass-panel {
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 14px 10px 18px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+}
+        .page-title {
+            font-size: clamp(0.8rem, 2.2vh, 1.3rem);
+            text-align: center;
+            margin: 0.4vh 0;
+            text-shadow: 0 0 12px var(--glow);
+            font-weight: 600;
+        }
+
+       .protocol-row-top,
+.protocol-row-bottom {
+    display: grid;
+    gap: 4px;
+    margin: 4px auto;
+    justify-content: center;
+    width: 100%;
+    max-width: none;
+}
+        .protocol-row-top { grid-template-columns: repeat(3, 1fr); }
+        .protocol-row-bottom { grid-template-columns: repeat(4, 1fr); }
+        .protocol-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    padding: 10px 4px;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+    min-width: 0;
+}
+        .protocol-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 15px var(--glow);
+            border-color: var(--glow);
+        }
+        .protocol-card.selected {
+            border-color: var(--glow);
+            box-shadow: 0 0 20px var(--glow);
+            background: rgba(100, 200, 255,  0.12);
+        }
+        .config-box {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 4px 0;
+    width: 100%;
+    height: 100px;
+    flex: none;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.3;
+    color: #e0f7ff;
+    overflow-y: auto;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.config-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    flex: none;
+    min-width: 0;
+}
+
+.raw-json-label {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    z-index: 5;
+    display: none;
+
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    color: #b8b8b8;
+
+    padding: 2px 5px;
+    background: rgba(0, 0, 0, .18);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 3px;
+
+    text-shadow: none;
+
+    pointer-events: none;
+    user-select: none;
+    cursor: default;
+
+    transition:
+        color .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        opacity .2s ease;
+}
+
+.raw-json-label.visible {
+    display: block;
+    color: #b8b8b8;
+
+    border-color: rgba(255,255,255,.12);
+    box-shadow: none;
+    text-shadow: none;
+}
+        .copy-btn {
+            display: block;
+            width: 100%;
+            padding: 0.5vh;
+            margin-top: 0.2vh;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: clamp(0.75rem, 1.9vh, 1rem);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            border-color: var(--glass-border);
+            background: var(--glass);
+            color: var(--white);
+        }
+
+        .copy-btn.copied {
+            background: rgba(34,197,94,.18);
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+        .copy-btn {
+            display: block;
+            width: 100%;
+            padding: 0.5vh;
+            margin-top: 0.2vh;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: clamp(0.75rem, 1.9vh, 1rem);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+       .dropdown-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+      .proxy-allnet-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: end;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.proxy-container {
+    min-width: 0;
+}
+
+.proxy-container label {
+    display: block;
+    margin-bottom: 0.25vh;
+    font-size: clamp(0.65rem, 1.6vh, 0.9rem);
+    opacity: 0.9;
+}
+
+.allnet-btn {
+    min-width: 125px;
+    height: 100%;
+    min-height: 30px;
+    padding: 0.4vh 12px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    color: var(--white);
+    font-size: clamp(0.65rem, 1.6vh, 0.9rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    white-space: nowrap;
+}
+
+.allnet-btn:hover {
+    border-color: var(--glow);
+    background: rgba(100, 200, 255, 0.08);
+    box-shadow: 0 0 15px var(--glow);
+}
+
+.allnet-btn:active {
+    transform: scale(0.97);
+}
+
+.allnet-btn.active {
+    border-color: var(--glow);
+    background: rgba(100, 200, 255, 0.12);
+    box-shadow: 0 0 20px var(--glow);
+}
+        .dropdown-container label {
+            display: block;
+            margin-bottom: 0.25vh;
+            font-size: clamp(0.65rem, 1.6vh, 0.9rem);
+            opacity: 0.9;
+        }
+        select {
+            width: 100%;
+            padding: 0.4vh 0.7vw;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: clamp(0.65rem, 1.6vh, 0.9rem);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7vw center;
+        }
+        select option { background: #0a1929; color: white; }
+
+        .center-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 10, 15, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0;
+            z-index: 999;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .center-loading-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .center-loading-overlay.closing {
+            opacity: 0;
+        }
+
+        .fetch-loading-wrapper {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .fetch-loading-wrapper.hidden {
+            opacity: 0;
+            transform: translateY(-6px);
+            pointer-events: none;
+            position: absolute;
+        }
+
+       .fetch-loading-text{
+    position:relative;
+    font-size:17px;
+    font-weight:600;
+    color:#94a3b8;
+    overflow:hidden;
+    white-space:nowrap;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+    letter-spacing:.2px;
+}
+       .fetch-loading-text::before{
+    content:attr(data-text);
+    position:absolute;
+    inset:0;
+    color:transparent;
+
+    background:linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 15%,
+        rgba(255,255,255,.98) 50%,
+        transparent 85%,
+        transparent 100%
+    );
+
+    background-size:180px 100%;
+    background-repeat:no-repeat;
+    background-position:-180px 0;
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    animation:textLightSweep 1.9s linear infinite;
+
+    pointer-events:none;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+}
+         
+        .popup-overlay{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:transparent;
+    backdrop-filter:none;
+    z-index:10000;
+}
+        .popup{
+    position:relative;
+    width:380px;
+    max-width:90%;
+    background:#101722;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    box-shadow:0 20px 50px rgba(0,0,0,.45);
+    padding:26px 24px;
+    animation:popup .25s ease;
+}
+
+@keyframes popup{
+    from{
+        opacity:0;
+        transform:translateY(12px) scale(.97);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+.close{
+    position:absolute;
+    top:12px;
+    right:14px;
+    background:none;
+    border:none;
+    color:#8b95a5;
+    font-size:24px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.close:hover{
+    color:#fff;
+}
+
+.popup-content{
+    text-align:center;
+    padding-top:8px;
+}
+
+.success-title{
+    position:relative;
+    display:inline-block;
+    font-size:20px;
+    font-weight:600;
+    color:#22c55e;
+    margin-bottom:14px;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+}
+
+.success-title::before{
+    content:"Fetched Server Hosts Successfully";
+    position:absolute;
+    inset:0;
+    color:transparent;
+    background:linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,.95) 50%,
+        transparent 100%
+     text-shadow:none !important;
+     -webkit-text-stroke:0 !important;
+     filter:none !important;
+    );
+    background-size:220px 100%;
+    background-repeat:no-repeat;
+    background-position:-220px 0;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:greenSweep 2.5s linear infinite;
+    pointer-events:none;
+}
+
+@keyframes greenSweep{
+    from{
+        background-position:-220px 0;
+    }
+    to{
+        background-position:220px 0;
+    }
+}
+
+.popup-content p{
+    color:#a8b2bf;
+    font-size:14px;
+    line-height:1.6;
+        }
+.title-sweep{
+    position:relative;
+    display:inline-block;
+    color:#F8FAFC;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.title-sweep::before{
+    content:attr(data-text);
+    position:absolute;
+    inset:0;
+    color:transparent;
+    background:linear-gradient(
+        90deg,
+        #00f5ff,
+        #8b5cf6,
+        #ff2bd6,
+        #00f5ff
+    );
+
+    background-size:300% 100%;
+    background-repeat:no-repeat;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:cyberMove 4s linear infinite;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+    pointer-events:none;
+}
+
+@keyframes cyberMove{
+    0%{
+        background-position:0% 50%;
+    }
+
+    100%{
+        background-position:300% 50%;
+    }
+}
+
+    background-size:300px 100%;
+    background-repeat:no-repeat;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:sweep 2.5s linear infinite;
+    text-shadow:none !important;
+    -webkit-text-stroke:0 !important;
+    filter:none !important;
+    pointer-events:none;
+    }
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#page3 {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+}
+
+.dashboard-scale {
+    position: absolute;
+
+    width: 540px;
+    height: 1016px;
+
+    left: 50%;
+    top: 0;
+
+    transform-origin: top center;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+
+    padding: 8px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+.dashboard-scale .top-container {
+    width: 100%;
+    height: 326px;
+
+    flex: 0 0 326px;
+
+    margin: 0;
+    padding: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.17fr)
+        minmax(0, 1fr);
+
+    gap: 8px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+.dashboard-scale .glass-panel {
+    width: 100%;
+
+    max-width: none;
+
+    min-width: 0;
+    min-height: 0;
+
+    margin: 0;
+
+    flex: 1 1 0;
+
+    height: auto;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+}
+
+.dashboard-scale .system-status-panel,
+.dashboard-scale .log-panel,
+.dashboard-scale .glass-panel,
+.dashboard-scale .protocol-row-top,
+.dashboard-scale .protocol-row-bottom,
+.dashboard-scale .dropdown-group,
+.dashboard-scale .server-host-controls,
+.dashboard-scale .config-box,
+.dashboard-scale .copy-btn,
+.dashboard-scale .quote-section {
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.dashboard-scale .status-value {
+    min-width: 0;
+    max-width: 100%;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+.dashboard-footer {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+
+    width: 100%;
+    text-align: center;
+
+    font-size: 10px;
+    line-height: 1;
+    font-family: "Courier New", monospace;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+
+    
+    color: #ff3b30;
+
+    
+    text-shadow:
+        0 0 2px rgba(255, 59, 48, 0.45),
+        0 0 5px rgba(255, 59, 48, 0.18);
+
+    -webkit-text-stroke: 0;
+    filter: none;
+
+    position: absolute;
+    overflow: hidden;
+}
+
+
+.dashboard-footer::before {
+    content: attr(data-text);
+
+    position: absolute;
+    inset: 0;
+
+    color: transparent;
+
+    background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 15%,
+
+    rgba(255, 215, 0, 0.15) 25%,
+    rgba(255, 215, 0, 0.45) 35%,
+
+    #ffd700 42%,
+    #fff4c2 47%,
+    #ffffff 50%,
+    #fff4c2 53%,
+    #ffd700 58%,
+
+    rgba(255, 215, 0, 0.45) 65%,
+    rgba(255, 215, 0, 0.15) 75%,
+
+    transparent 85%,
+    transparent 100%
+);
+    background-size: 350px 100%;
+    background-repeat: no-repeat;
+    background-position: -220px 0;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    animation: footerRedGoldSweep 3.8s linear infinite;
+
+    pointer-events: none;
+
+    text-shadow: none !important;
+    -webkit-text-stroke: 0 !important;
+    filter: none !important;
+}
+
+@keyframes footerRedGoldSweep {
+    0% {
+        background-position: -220px 0;
+    }
+
+    100% {
+        background-position: calc(100% + 220px) 0;
+    }
+}
+
+.dashboard-scale .log-content {
+    min-width: 0;
+    max-width: 100%;
+
+    overflow-x: hidden;
+}
+
+.dashboard-scale .protocol-card {
+    min-width: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+}
+
+.dashboard-scale select,
+.dashboard-scale #serverHostSelect,
+.dashboard-scale .fetch-btn {
+    min-width: 0;
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+
+    .dashboard-scale {
+        --dashboard-scale: 1;
+
+        transform:
+            translateX(-50%)
+            scale(var(--dashboard-scale));
+
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+    }
+
+}
+
+@media (min-width: 769px) {
+
+    .dashboard-scale {
+        transform:
+            translateX(-50%)
+            scale(var(--dashboard-scale, 1));
+
+        -webkit-text-size-adjust: none;
+        text-size-adjust: none;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="center-loading-overlay" id="fetchOverlay">
+        <div class="container">
+            <div class="fetch-loading-wrapper" id="fetchLoadingWrapper">
+                <div class="fetch-loading-text" id="fetchLoadingText" data-text="Fetching Server Hosts">
+    Fetching Server Hosts<span class="dots"></span>
+</div>
+                <div class="fetch-progress-line"></div>
+            </div>
+         <div class="popup-overlay" id="successMsg" style="display:none;">
+
+    <div class="popup">
+
+        <button class="close" onclick="closePopup()">&times;</button>
+
+        <div class="popup-content">
+
+            <h2 class="success-title">
+                Fetched Server Hosts Successfully
+            </h2>
+
+            <p>
+                The latest server hosts have been retrieved and are now available for use.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+        </div>
+    </div>
+
+    <div id="page1" class="page active">
+
+<div class="skeleton-container">
+
+
+<div class="skeleton-top">
+
+
+<div class="skeleton-glass skeleton-status">
+
+<div class="skeleton-item skeleton-title"></div>
+
+<div class="skeleton-item skeleton-line"></div>
+<div class="skeleton-item skeleton-line short"></div>
+<div class="skeleton-item skeleton-line"></div>
+<div class="skeleton-item skeleton-line short"></div>
+
+<div class="skeleton-item skeleton-graph"></div>
+
+
+</div>
+
+
+
+<div class="skeleton-glass skeleton-log">
+
+</div>
+
+
+</div>
+
+
+
+<div class="skeleton-glass skeleton-main">
+
+
+<div class="skeleton-item skeleton-title"></div>
+
+
+<div class="skeleton-card-row">
+
+<div class="skeleton-item skeleton-card"></div>
+<div class="skeleton-item skeleton-card"></div>
+<div class="skeleton-item skeleton-card"></div>
+
+</div>
+
+
+
+<div class="skeleton-card-row">
+
+<div class="skeleton-item skeleton-card"></div>
+<div class="skeleton-item skeleton-card"></div>
+<div class="skeleton-item skeleton-card"></div>
+<div class="skeleton-item skeleton-card"></div>
+
+</div>
+
+
+
+<div class="skeleton-item skeleton-dropdown"></div>
+
+<div class="skeleton-item skeleton-dropdown"></div>
+
+
+<div class="skeleton-item skeleton-config"></div>
+
+
+<div class="skeleton-item skeleton-button"></div>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+   <div id="page3" class="page">
+    <div class="dashboard-scale">
+        <div class="top-container">
+            <div class="system-status-panel">
+                <div class="status-header">
+                    <strong>𝐒𝐄𝐑𝐕𝐄𝐑 𝐒𝐓𝐀𝐓𝐔𝐒 </strong> 
+                    <span class="status-indicator good" id="latencyDot"></span>
+                </div>
+                 <div class="status-row">
+    <span class="status-label">𝐕𝐢𝐬𝐢𝐭𝐨𝐫𝐬:</span>
+    <span id="visitorCount" class="status-value">Loading...</span>
+</div>
+
+<div class="status-row">
+    <span class="status-label">𝐘𝐨𝐮𝐫<span class="red-label">𝐈𝐏:</span></span>
+    <span id="userIP" class="status-value">Loading...</span>
+</div>
+
+<div class="status-row">
+    <span class="status-label">𝐘𝐨𝐮𝐫<span class="red-label">𝐂𝐨𝐮𝐧𝐭𝐫𝐲:</span></span>
+    <span id="visitorCountry" class="status-value">Loading...</span>
+</div>
+
+<div class="status-row">
+    <span class="status-label">𝐘𝐨𝐮𝐫<span class="red-label">𝐂𝐢𝐭𝐲:</span></span>
+    <span id="visitorCity" class="status-value">Loading...</span>
+</div>
+
+<div class="status-row">
+    <span class="status-label">𝐘𝐨𝐮𝐫<span class="red-label">𝐈𝐒𝐏:</span></span>
+    <span id="visitorISP" class="status-value">Loading...</span>
+</div>
+
+<div class="status-row">𝐒𝐞𝐫𝐯𝐞𝐫𝐔𝐩𝐭𝐢𝐦𝐞: <span id="uptime" class="status-wait">00:00:00</span>
+</div>
+               <div class="graph-container" id="activityGraph">
+    <div class="graph-bar" data-index="0"></div>
+    <div class="graph-bar" data-index="1"></div>
+    <div class="graph-bar" data-index="2"></div>
+    <div class="graph-bar" data-index="3"></div>
+    <div class="graph-bar" data-index="4"></div>
+    <div class="graph-bar" data-index="5"></div>
+    <div class="graph-bar" data-index="6"></div>
+    <div class="graph-bar" data-index="7"></div>
+</div>
+                <div class="network-monitor-label">𝐏𝐀𝐂𝐊𝐄𝐓 𝐅𝐋𝐎𝐖 𝐌𝐎𝐍𝐈𝐓𝐎𝐑</div>
+            </div>
+
+            <div class="log-panel">
+
+    <div class="log-header">
+        <span>𝐒𝐄𝐑𝐕𝐄𝐑 𝐄𝐕𝐄𝐍𝐓 𝐋𝐎𝐆</span>
+    </div>
+
+    <div class="log-divider"></div>
+
+    <div class="log-content" id="systemLog"></div>
+
+    <div class="log-bottom">
+   <div class="log-actions">
+    <button class="info-btn" id="infoBtn" type="button" aria-label="Information">i</button>
+    <button class="clear-log-btn" id="clearLogBtn">CLEAR</button>
+</div>
+</div>
+
+</div>
+</div>
+
+        <div class="glass-panel">
+            <h1 class="page-title">
+    <span
+        class="title-sweep"
+        data-text="𝐇𝐀𝐏𝐫𝐨𝐱𝐲 𝟏𝟐 𝐢𝐧 𝟏  𝐌𝐮𝐥𝐭𝐢 𝐩𝐫𝐨𝐭𝐨𝐜𝐨𝐥 𝐒𝐞𝐫𝐯𝐞𝐫">
+        𝐇𝐀𝐏𝐫𝐨𝐱𝐲 𝟏𝟐 𝐢𝐧 𝟏  𝐌𝐮𝐥𝐭𝐢 𝐩𝐫𝐨𝐭𝐨𝐜𝐨𝐥 𝐒𝐞𝐫𝐯𝐞𝐫
+    </span>
+</h1>
+            <div class="protocol-row-top">
+                <div class="protocol-card" data-transport="websocket">WEBSOCKET</div>
+                <div class="protocol-card" data-transport="grpc">gRPC</div>
+                <div class="protocol-card" data-transport="xhttp">XHTTP</div>
+            </div>
+            <div class="protocol-row-bottom">
+                <div class="protocol-card" data-protocol="vless">Vless</div>
+                <div class="protocol-card" data-protocol="trojan">Trojan</div>
+                <div class="protocol-card" data-protocol="shadowsocks">Shadowsocks</div>
+                <div class="protocol-card" data-protocol="vmess">Vmess</div>
+            </div>
+
+            
+            <div class="dropdown-group">
+                <div class="dropdown-container">
+                    <label>Address Selection</label>
+                    <select id="addressSelect">
+                        <option value="fcmtoken.googleapis.com">fcmtoken.googleapis.com</option>
+                        <option value="firebase-settings.crashlytics.com">firebase-settings.crashlytics.com</option>
+                        <option value="app-analytics-services.com">app-analytics-services.com</option>
+                        <option value="ssl.google-analytics.com">ssl.google-analytics.com</option>
+                        <option value="beacons.gcp.gvt2.com">beacons.gcp.gvt2.com</option>
+                        <option value="socket.gleeze.com">socket.gleeze.com</option>
+                        <option value="redirector.gvt1.com">redirector.gvt1.com</option>
+                    </select>
+                </div>
+                <div class="dropdown-container">
+                    <label>Server Name Indication</label>
+                    <select id="sniSelect">
+                        <option value="fcmtoken.googleapis.com">fcmtoken.googleapis.com</option>
+                        <option value="cdn-settings.appsflyersdk.com">cdn-settings.appsflyersdk.com</option>
+                        <option value="firebase-settings.crashlytics.com">firebase-settings.crashlytics.com</option>
+                        <option value="ssl.google-analytics.com">ssl.google-analytics.com</option>
+                        <option value="conversions.appsflyer.com">conversions.appsflyer.com</option>
+                        <option value="benefits-client-production.voyagerapis.com">benefits-client-production.voyagerapis.com</option>
+                        <option value="api-bnpl.mayabank.ph">api-bnpl.mayabank.ph</option>
+                    </select>
+                </div>
+            </div>
+                               <div class="proxy-allnet-row">
+
+                <div class="proxy-container">
+                    <label>Proxy Selection</label>
+                    <select id="proxySelect" disabled>
+                      <option value="iorg-fba-edge-shv-01-tpe1.facebook.com:8080">iorg-fba-edge-shv-01-tpe1.facebook.com:8080</option>
+<option value="iorg-fba-edge-shv-01-nrt1.facebook.com:8080">iorg-fba-edge-shv-01-nrt1.facebook.com:8080</option>
+<option value="iorg-fba-edge-shv-01-sin1.facebook.com:8080">iorg-fba-edge-shv-01-sin1.facebook.com:8080</option>
+<option value="iorg-fba-edge-shv-01-bkk1.facebook.com:8080">iorg-fba-edge-shv-01-bkk1.facebook.com:8080</option>
+<option value="iorg-fba-edge-shv-02-mnl1.facebook.com:8080">iorg-fba-edge-shv-02-mnl1.facebook.com:8080</option>
+                        <option value="31.13.64.39:8080">31.13.64.39:8080</option>
+                        <option value="157.240.211.38:8080">157.240.211.38:8080</option>
+                        <option value="57.144.120.4:8080">57.144.120.4:8080</option>
+                        <option value="157.240.9.39:8080">157.240.9.39:8080</option>
+                    </select>
+                </div>
+
+                <button
+                    type="button"
+                    class="allnet-btn"
+                    id="allnetBtn">
+                    ALLNETWORKS
+                </button>
+
+            </div>
+
+                        <div class="config-wrapper">
+    <span class="raw-json-label" id="rawJsonLabel">RAW JSON</span>
+    <div class="config-box" id="configOutput"></div>
+</div>
+
+<button class="copy-btn" id="copyConfigBtn">COPY CONFIG</button>
+
+            <div class="dashboard-footer" data-text="</𝐜𝐱𝐥𝐯𝐢𝐧𝟕𝟕𝟕::𝐁𝐔𝐈𝐋𝐓_𝐖𝐈𝐓𝐇_𝐈𝐍𝐓𝐄𝐍𝐓 — © 𝟐𝟎𝟐𝟔 𝐀𝐋𝐋 𝐑𝐈𝐆𝐇𝐓𝐒 𝐑𝐄𝐒𝐄𝐑𝐕𝐄𝐃>">&lt;/𝐜𝐱𝐥𝐯𝐢𝐧𝟕𝟕𝟕::𝐁𝐔𝐈𝐋𝐓_𝐖𝐈𝐓𝐇_𝐈𝐍𝐓𝐄𝐍𝐓 — © 𝟐𝟎𝟐𝟔 𝐀𝐋𝐋 𝐑𝐈𝐆𝐇𝐓𝐒 𝐑𝐄𝐒𝐄𝐑𝐕𝐄𝐃&gt;</div>
+  
+<div class="info-popup" id="infoPopup">
+    <div class="info-box">
+        <button class="info-close" id="infoClose" type="button">&times;</button>
+
+        <div class="info-content">
+     <h2>📋 WHAT YOU NEED TO KNOW:</h2>
+     <p class="risk">
+         ⚠️ USE AT YOUR OWN RISK. 
+     </p>
+     <p>
+         📵 The main risk of using No Load is getting your SIM blocked.<br>
+         💡 Don’t use your personal SIM — use dummy SIM cards.
+     </p>
+     <p>
+         🎁 I built this 100% FREE and I’m giving it away for exactly that — FREE.
+     </p>
+     <p>
+         🔒 No phishing. 👁️ No spying. 💾 No data theft.<br>
+         📝 No logs. 📍 No tracking. 🗑️ Nothing collected.
+     </p>
+     <p class="dev">
+              Dev: <strong>Cxlvin⁷⁷⁷ ᕙ⁠(͡⁠°⁠‿⁠ ͡⁠°⁠)⁠ᕗ</strong> 
+            </p>
+        </div>
+    </div>
+</div>
+
+    <script>
+        const page1 = document.getElementById('page1');
+        const page3 = document.getElementById('page3');
+        const dashboardScale = document.querySelector('.dashboard-scale');
+
+function scaleDashboard() {
+
+    if (!dashboardScale || !page3) return;
+
+    const DESIGN_WIDTH = 540;
+    const DESIGN_HEIGHT = 1016;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const scaleX = viewportWidth / DESIGN_WIDTH;
+    const scaleY = viewportHeight / DESIGN_HEIGHT;
+    const scale = Math.min(scaleX, scaleY);
+    dashboardScale.style.setProperty(
+        '--dashboard-scale',
+        scale
+    );
+}
+
+scaleDashboard();
+
+window.addEventListener(
+    'resize',
+    scaleDashboard,
+    { passive: true }
+);
+
+window.addEventListener(
+    'orientationchange',
+    () => {
+        setTimeout(scaleDashboard, 100);
+    },
+    { passive: true }
+);
+        const elVisitor = document.getElementById('visitorCount');
+        const elIP = document.getElementById('userIP');
+        const elCountry = document.getElementById('visitorCountry');
+const elCity = document.getElementById('visitorCity');
+const elISP = document.getElementById('visitorISP');
+        const elUptime = document.getElementById('uptime');
+        const elLog = document.getElementById('systemLog');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        const graphBars = document.querySelectorAll('.graph-bar');
+        const latencyDot = document.getElementById('latencyDot');
+        const configOutput = document.getElementById('configOutput');
+const rawJsonLabel = document.getElementById('rawJsonLabel');
+const copyConfigBtn = document.getElementById('copyConfigBtn');
+const addressSelect = document.getElementById('addressSelect');
+        const sniSelect = document.getElementById('sniSelect');
+      const proxySelect = document.getElementById('proxySelect');
+const allnetBtn = document.getElementById('allnetBtn');
+let allnetMode = false;
+        
+        const transportCards = document.querySelectorAll('[data-transport]');
+        const protocolCards = document.querySelectorAll('[data-protocol]');
+        const fetchOverlay = document.getElementById('fetchOverlay');
+        const successMsg = document.getElementById('successMsg');
+        const fetchLoadingText = document.getElementById('fetchLoadingText');
+        const fetchLoadingWrapper = document.getElementById('fetchLoadingWrapper');
+        function closePopup() {
+
+    successMsg.style.display = "none";
+    fetchOverlay.classList.add("closing");
+    setTimeout(() => {
+
+        fetchOverlay.classList.remove("active");
+        fetchOverlay.classList.remove("closing");
+
+    },400);
+
+}
+        let serverStartTime = null;
+        const BACKEND_ENDPOINT = '/api/status';    
+        const MASTER_LIST_URL = '/server.json';
+        let activityHistory = Array(8).fill(0);
+        let currentLatency = 'good';
+        let logEntries = [];
+        const MAX_LOGS = 50;
+        let pageLoadTime = Date.now();
+        let selectedTransport = null;
+        let selectedProtocol = 'vless';
+        let cloudRunHost = null; 
+        let transportGlowTimer;
+        const configTemplates = {
+            websocket: {
+                vless: 'vless://cxlvin777@{{ADDRESS}}:443?encryption=none&type=ws&host={{SELECTED_HOST}}&headerType=none&path=%2FCxlvinVlWS%3Fed%3D2560&security=tls&sni={{SNI}}#CxlvinVlWS',
+                trojan: 'trojan://Cxlvin777@{{ADDRESS}}:443?type=ws&host={{SELECTED_HOST}}&headerType=none&path=%2FCxlvinTRWS%3Fed%3D2560&security=tls&sni={{SNI}}#CxlvinTrWS',
+                shadowsocks: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpDeGx2aW43Nzc=@{{ADDRESS}}:443?type=ws&host={{SELECTED_HOST}}&headerType=none&path=%2FCxlvinSSWS%3Fed%3D2560&security=tls&sni={{SNI}}#CxlvinSSWS - use default dns',
+                vmess: 'vmess://{{VMESS_WS}}'
+            },
+             'grpc': {
+        vless: '{"dns":{"hosts":{"domain:googleapis.cn":"googleapis.com","dns.alidns.com":["223.5.5.5","223.6.6.6","2400:3200::1","2400:3200:baba::1"],"one.one.one.one":["1.1.1.1","1.0.0.1","2606:4700:4700::1111","2606:4700:4700::1001"],"static-00.iconduck.com":["9.9.9.11","149.112.112.11","2620:fe::fe","2620:fe::11"],"dot.pub":["1.12.12.12","120.53.53.53"],"images.icon-icons.com":["208.67.222.222","208.67.220.220","2620:119:35::35","icon"],"dns.google":["8.8.8.8","8.8.4.4","2001:4860:4860::8888","2001:4860:4860::8844"],"blog.uncensoreddns.org":["91.239.100.100","89.233.43.71","2001:67c:28a4::","icon"],"dns.quad9.net":["9.9.9.9","149.112.112.112","2620:fe::fe","2620:fe::9"],"common.dot.dns.yandex.net":["77.88.8.8","77.88.8.1","2a02:6b8::feed:0ff","2a02:6b8:0:1::feed:0ff"]},"disableCache":false,"servers":["1.1.1.1","223.5.5.5","8.8.8.8"]},"log":{"loglevel":"warning"},"inbounds":[{"listen":"0.0.0.0","port":"1080","protocol":"dokodemo-door","settings":{"network":"tcp,udp","followRedirect":true},"tag":"tun-inbound"},{"listen":"127.0.0.1","port":10808,"protocol":"socks","settings":{"auth":"noauth","udp":true},"tag":"socks-inbound"}],"outbounds":[{"tag":"proxy","protocol":"vless","settings":{"vnext":[{"address":"{{ADDRESS}}","port":443,"users":[{"id":"cxlvin777","encryption":"none"}]}]},"streamSettings":{"network":"grpc","security":"tls","tlsSettings":{"serverName":"{{SNI}}","allowInsecure":true},"grpcSettings":{"serviceName":"cxlvinvl-grpc","authority":"{{SELECTED_HOST}}"}}},{"domainStrategy":"AsIs","protocol":"http","settings":{"servers":[{"address":"firebaselogging.googleapis.com","port":8080}],"headers":{"Host":"CONNECT dynamic-report-api.appsflyer.com:443 HTTP\\/1.1[crlf]x-connected-to: 100.92.0.0\\/16[crlf][crlf]","Proxy-Connection":"keep-alive","User-Agent":"cxlvin\\/1.0","X-iorg-bsid":"@cxlvinvl-grpc","X-AppsFlyer-Hosts":"dynamic-report-api.appsflyer.com,conversions.appsflyer.com,inapps.appsflyer.com,events.appsflyer.com,launches.appsflyer.com,gcdsdk.appsflyer.com,cdn-settings.appsflyersdk.com"}},"tag":"vless-grpc"},{"protocol":"freedom","tag":"direct"},{"protocol":"blackhole","tag":"block"}],"routing":{"domainStrategy":"AsIs","rules":[{"type":"field","protocol":["dns"],"outboundTag":"direct"},{"type":"field","inboundTag":["tun-inbound","socks-inbound"],"outboundTag":"proxy"}]},"policy":{"levels":{"8":{"connIdle":300,"downlinkOnly":1,"handshake":4,"uplinkOnly":1}}}}',
+        trojan: '{"dns":{"hosts":{"domain:googleapis.cn":"googleapis.com","dns.alidns.com":["223.5.5.5","223.6.6.6","2400:3200::1","2400:3200:baba::1"],"one.one.one.one":["1.1.1.1","1.0.0.1","2606:4700:4700::1111","2606:4700:4700::1001"],"static-00.iconduck.com":["9.9.9.11","149.112.112.11","2620:fe::fe","2620:fe::11"],"dot.pub":["1.12.12.12","120.53.53.53"],"images.icon-icons.com":["208.67.222.222","208.67.220.220","2620:119:35::35","icon"],"dns.google":["8.8.8.8","8.8.4.4","2001:4860:4860::8888","2001:4860:4860::8844"],"blog.uncensoreddns.org":["91.239.100.100","89.233.43.71","2001:67c:28a4::","icon"],"dns.quad9.net":["9.9.9.9","149.112.112.112","2620:fe::fe","2620:fe::9"],"common.dot.dns.yandex.net":["77.88.8.8","77.88.8.1","2a02:6b8::feed:0ff","2a02:6b8:0:1::feed:0ff"]},"disableCache":false,"servers":["1.1.1.1","223.5.5.5","8.8.8.8"]},"log":{"loglevel":"warning"},"inbounds":[{"listen":"0.0.0.0","port":1080,"protocol":"dokodemo-door","settings":{"network":"tcp,udp","followRedirect":true},"tag":"tun-inbound"},{"listen":"127.0.0.1","port":10808,"protocol":"socks","settings":{"auth":"noauth","udp":true},"tag":"socks-inbound"}],"outbounds":[{"tag":"proxy","protocol":"trojan","settings":{"servers":[{"address":"{{ADDRESS}}","port":443,"password":"Cxlvin777"}]},"streamSettings":{"network":"grpc","security":"tls","tlsSettings":{"serverName":"{{SNI}}","allowInsecure":true},"grpcSettings":{"serviceName":"cxlvintr-grpc","authority":"{{SELECTED_HOST}}"}}},{"domainStrategy":"AsIs","protocol":"http","settings":{"servers":[{"address":"firebaselogging.googleapis.com","port":8080}],"headers":{"Host":"CONNECT dynamic-report-api.appsflyer.com:443 HTTP\\/1.1[crlf]x-connected-to: 100.92.0.0\\/16[crlf][crlf]","Proxy-Connection":"keep-alive","User-Agent":"cxlvin\\/1.0","X-iorg-bsid":"@cxlvinvm-grpc","X-AppsFlyer-Hosts":"dynamic-report-api.appsflyer.com,conversions.appsflyer.com,inapps.appsflyer.com,events.appsflyer.com,launches.appsflyer.com,gcdsdk.appsflyer.com,cdn-settings.appsflyersdk.com"}},"tag":"trojan-grpc"},{"protocol":"freedom","tag":"direct"},{"protocol":"blackhole","tag":"block"}],"routing":{"domainStrategy":"AsIs","rules":[{"type":"field","protocol":["dns"],"outboundTag":"direct"},{"type":"field","inboundTag":["tun-inbound","socks-inbound"],"outboundTag":"proxy"}]},"policy":{"levels":{"8":{"connIdle":300,"downlinkOnly":1,"handshake":4,"uplinkOnly":1}}}}',
+        shadowsocks: '{"dns":{"hosts":{"domain:googleapis.cn":"googleapis.com","dns.alidns.com":["223.5.5.5","223.6.6.6","2400:3200::1","2400:3200:baba::1"],"one.one.one.one":["1.1.1.1","1.0.0.1","2606:4700:4700::1111","2606:4700:4700::1001"],"static-00.iconduck.com":["9.9.9.11","149.112.112.11","2620:fe::fe","2620:fe::11"],"dot.pub":["1.12.12.12","120.53.53.53"],"images.icon-icons.com":["208.67.222.222","208.67.220.220","2620:119:35::35","icon"],"dns.google":["8.8.8.8","8.8.4.4","2001:4860:4860::8888","2001:4860:4860::8844"],"blog.uncensoreddns.org":["91.239.100.100","89.233.43.71","2001:67c:28a4::","icon"],"dns.quad9.net":["9.9.9.9","149.112.112.112","2620:fe::fe","2620:fe::9"],"common.dot.dns.yandex.net":["77.88.8.8","77.88.8.1","2a02:6b8::feed:0ff","2a02:6b8:0:1::feed:0ff"]},"disableCache":false,"servers":["1.1.1.1","223.5.5.5","8.8.8.8"]},"log":{"loglevel":"warning"},"inbounds":[{"listen":"0.0.0.0","port":1080,"protocol":"dokodemo-door","settings":{"network":"tcp,udp","followRedirect":true},"tag":"tun-inbound"},{"listen":"127.0.0.1","port":10808,"protocol":"socks","settings":{"auth":"noauth","udp":true},"tag":"socks-inbound"}],"outbounds":[{"tag":"proxy","protocol":"shadowsocks","settings":{"servers":[{"address":"{{ADDRESS}}","port":443,"method":"chacha20-ietf-poly1305","password":"Cxlvin777"}]},"streamSettings":{"network":"grpc","security":"tls","tlsSettings":{"serverName":"{{SNI}}","allowInsecure":true},"grpcSettings":{"serviceName":"cxlvinss-grpc","authority":"{{SELECTED_HOST}}"}}},{"domainStrategy":"AsIs","protocol":"http","settings":{"servers":[{"address":"firebaselogging.googleapis.com","port":8080}],"headers":{"Host":"CONNECT dynamic-report-api.appsflyer.com:443 HTTP\\/1.1[crlf]x-connected-to: 100.92.0.0\\/16[crlf][crlf]","Proxy-Connection":"keep-alive","User-Agent":"cxlvin\\/1.0","X-iorg-bsid":"@cxlvinvm-grpc","X-AppsFlyer-Hosts":"dynamic-report-api.appsflyer.com,conversions.appsflyer.com,inapps.appsflyer.com,events.appsflyer.com,launches.appsflyer.com,gcdsdk.appsflyer.com,cdn-settings.appsflyersdk.com"}},"tag":"trojan-grpc"},{"protocol":"freedom","tag":"direct"},{"protocol":"blackhole","tag":"block"}],"routing":{"domainStrategy":"AsIs","rules":[{"type":"field","protocol":["dns"],"outboundTag":"direct"},{"type":"field","inboundTag":["tun-inbound","socks-inbound"],"outboundTag":"proxy"}]},"policy":{"levels":{"8":{"connIdle":300,"downlinkOnly":1,"handshake":4,"uplinkOnly":1}}}}',
+        vmess: '{"dns":{"hosts":{"domain:googleapis.cn":"googleapis.com","dns.alidns.com":["223.5.5.5","223.6.6.6","2400:3200::1","2400:3200:baba::1"],"one.one.one.one":["1.1.1.1","1.0.0.1","2606:4700:4700::1111","2606:4700:4700::1001"],"static-00.iconduck.com":["9.9.9.11","149.112.112.11","2620:fe::fe","2620:fe::11"],"dot.pub":["1.12.12.12","120.53.53.53"],"images.icon-icons.com":["208.67.222.222","208.67.220.220","2620:119:35::35","icon"],"dns.google":["8.8.8.8","8.8.4.4","2001:4860:4860::8888","2001:4860:4860::8844"],"blog.uncensoreddns.org":["91.239.100.100","89.233.43.71","2001:67c:28a4::","icon"],"dns.quad9.net":["9.9.9.9","149.112.112.112","2620:fe::fe","2620:fe::9"],"common.dot.dns.yandex.net":["77.88.8.8","77.88.8.1","2a02:6b8::feed:0ff","2a02:6b8:0:1::feed:0ff"]},"disableCache":false,"servers":["1.1.1.1","223.5.5.5","8.8.8.8"]},"log":{"loglevel":"warning"},"inbounds":[{"listen":"0.0.0.0","port":1080,"protocol":"dokodemo-door","settings":{"network":"tcp,udp","followRedirect":true},"tag":"tun-inbound"},{"listen":"127.0.0.1","port":10808,"protocol":"socks","settings":{"auth":"noauth","udp":true},"tag":"socks-inbound"}],"outbounds":[{"tag":"proxy","protocol":"vmess","settings":{"vnext":[{"address":"{{ADDRESS}}","port":443,"users":[{"id":"cxlvin777","alterId":0,"security":"auto"}]}]},"streamSettings":{"network":"grpc","security":"tls","tlsSettings":{"serverName":"{{SNI}}","allowInsecure":true},"grpcSettings":{"serviceName":"cxlvinvm-grpc","authority":"{{SELECTED_HOST}}"}}},{"domainStrategy":"AsIs","protocol":"http","settings":{"servers":[{"address":"firebaselogging.googleapis.com","port":8080}],"headers":{"Host":"CONNECT dynamic-report-api.appsflyer.com:443 HTTP\\/1.1[crlf]x-connected-to: 100.92.0.0\\/16[crlf][crlf]","Proxy-Connection":"keep-alive","User-Agent":"cxlvin\\/1.0","X-iorg-bsid":"@cxlvinvm-grpc","X-AppsFlyer-Hosts":"dynamic-report-api.appsflyer.com,conversions.appsflyer.com,inapps.appsflyer.com,events.appsflyer.com,launches.appsflyer.com,gcdsdk.appsflyer.com,cdn-settings.appsflyersdk.com"}},"tag":"vmess-grpc"},{"protocol":"freedom","tag":"direct"},{"protocol":"blackhole","tag":"block"}],"routing":{"domainStrategy":"AsIs","rules":[{"type":"field","protocol":["dns"],"outboundTag":"direct"},{"type":"field","inboundTag":["tun-inbound","socks-inbound"],"outboundTag":"proxy"}]},"policy":{"levels":{"8":{"connIdle":300,"downlinkOnly":1,"handshake":4,"uplinkOnly":1}}}}'
+          },
+            xhttp: {
+                vless: 'vless://cxlvin777@{{ADDRESS}}:443?encryption=none&type=xhttp&host={{SELECTED_HOST}}&headerType=auto&path=%2FCxlvinVlXH%3Fed%3D2560&security=tls&sni={{SNI}}#CxlvinVlXH',
+                trojan: 'trojan://Cxlvin777@{{ADDRESS}}:443?type=xhttp&host={{SELECTED_HOST}}&headerType=auto&path=%2FCxlvinTRXH%3Fed%3D2560&security=tls&sni={{SNI}}#CxlvinTRXH',
+                shadowsocks: 'ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpDeGx2aW43Nzc=@{{ADDRESS}}:443?type=xhttp&host={{SELECTED_HOST}}&headerType=auto&path=%2FCxlvinSSXH%3Fed%3D2560&security=tls&sni={{SNI}}#CxlvinSSXH - use default dns',
+                vmess: 'vmess://{{VMESS_XH}}'
+            }
+        };
+          const proxySniMap = {
+    'iorg-fba-edge-shv-01-tpe1.facebook.com:8080': 'tpe1.blogblog.com',
+    'iorg-fba-edge-shv-01-nrt1.facebook.com:8080': 'nrt1.blogblog.com',
+    'iorg-fba-edge-shv-01-sin1.facebook.com:8080': 'sin1.blogblog.com',
+    'iorg-fba-edge-shv-01-bkk1.facebook.com:8080': 'bkk1.blogblog.com',
+    'iorg-fba-edge-shv-02-mnl1.facebook.com:8080': 'mnl1.blogblog.com'
+};
+          const allnetTemplates = {
+    vless: 'darktunnel://eyJ0eXBlIjoiVkxFU1MiLCJuYW1lIjoiS1NfTk5FVF9DSEFOTkVMIiwidmxlc3NUdW5uZWxDb25maWciOnsidjJyYXlDb25maWciOnsiaG9zdCI6IndlYjEwMHZpZXdzLXByb2QudGltd2V0ZWNoLmNvbSIsInBvcnQiOjQ0MywidXVpZCI6ImN4bHZpbjc3NyIsInNlcnZlck5hbWVJbmRpY2F0aW9uIjoiemFpbi5ibG9nYmxvZy5jb20iLCJ3c1BhdGgiOiIvQ3hsdmluVmxXUyJ9LCJpbmplY3RDb25maWciOnsiZW5hYmxlZCI6dHJ1ZSwibW9kZSI6IlBST1hZIiwicGF5bG9hZCI6IkNPTk5FQ1QgemFpbi5ibG9nYmxvZy5jb206NDQzIEhUVFAvMS4xW2NybGZdeC1jb25uZWN0ZWQtdG86IGlvcmctZmJhLWVkZ2Utc2h2LTAyLW1ubDEuZmFjZWJvb2suY29tIFtjcmxmXXVzZXItYWdlbnQ6IEZCQVYvMC4wLjBbY3JsZl14LWlvcmctYnNpZDogQEN4bHZpbjc3N1tjcmxmXVtjcmxmXSJ9fX0=',
+    trojan: 'darktunnel://eyJ0eXBlIjoiVFJPSkFOIiwibmFtZSI6IkRlZmF1bHQiLCJ0cm9qYW5UdW5uZWxDb25maWciOnsidjJyYXlDb25maWciOnsiaG9zdCI6InJvYmkuZmFjZW1hcnNoYWwuY29tIiwicG9ydCI6NDQzLCJ1dWlkIjoiQ3hsdmluNzc3IiwidHJhbnNwb3J0TmV0d29yayI6IldlYnNvY2tldCIsInNlcnZlck5hbWVJbmRpY2F0aW9uIjoiemFpbi5ibG9nYmxvZy5jb20iLCJ3c1BhdGgiOiIvQ3hsdmluVFJXUyJ9LCJpbmplY3RDb25maWciOnsiZW5hYmxlZCI6dHJ1ZSwibW9kZSI6IlBST1hZIiwicHJveHlIb3N0IjoiMTU3LjI0MC4yMTEuMzgiLCJwYXlsb2FkIjoiQ09OTkVDVCB6YWluLmJsb2dibG9nLmNvbTo0NDMgSFRUUC8xLjFbY3JsZl14LWNvbm5lY3RlZC10bzogaW9yZy1mYmEtZWRnZS1zaHYtMDItbW5sMS5mYWNlYm9vay5jb20gW2NybGZddXNlci1hZ2VudDogRkJBVi8wLjAuMFtjcmxmXXgtaW9yZy1ic2lkOiBAQ3hsdmluNzc3W2NybGZdW2NybGZdIn19fQ=='
+        };
+
+        const vmessBase = {
+    ws: {
+        add: 'app-analytics-services.com',
+        port: '443',
+        id: 'cxlvin777',
+        aid: '0',
+        scy: 'auto',
+        net: 'ws',
+        type: 'none',
+        host: '',
+        path: '/CxlvinVMWS?ed=2560',
+        tls: 'tls',
+        sni: '',
+        ps: 'CxlvinVMWS',
+        v: '2'
+    },
+    grpc: {
+        add: 'app-analytics-services.com',
+        port: '443',
+        id: 'cxlvin777',
+        aid: '0',
+        scy: 'auto',
+        net: 'grpc',
+        type: 'none',
+        host: '',
+        path: '',
+        tls: 'tls',
+        sni: '',
+        ps: 'CxlvinVMGRPC',
+        v: '2'
+    },
+    xh: {
+        add: 'app-analytics-services.com',
+        port: '443',
+        id: 'cxlvin777',
+        aid: '0',
+        scy: 'auto',
+        net: 'xhttp',
+        type: 'auto',
+        host: '',
+        path: '/CxlvinVMXH?ed=2560',
+        tls: 'tls',
+        sni: '',
+        ps: 'CxlvinVMXH',
+        v: '2'
+    }
+};
+        
+        async function fetchAllServers() {
+    addLog('Loading latest server list...');
+
+    try {
+        const res = await fetch(MASTER_LIST_URL + '?t=' + Date.now());
+
+        if (!res.ok) {
+            throw new Error('Failed');
+        }
+        const data = await res.json();
+        deployedServers = data.deployed_servers || [];
+        const currentHost = location.hostname;
+
+        if (
+            currentHost.includes('.run.app') &&
+            !deployedServers.includes(currentHost)
+        ) {
+            deployedServers.push(currentHost);
+        }
+
+        addLog('Server list updated successfully.');
+
+detectCloudRunHost();
+updateConfigOutput();
+
+    } catch (error) {
+
+        addLog('Failed to load server list.');
+
+    }
+}
+
+        function extractRunAppHostname(value) {
+    if (typeof value !== 'string') {
+        return null;
+    }
+
+    let hostname = value.trim();
+
+    if (!hostname) {
+        return null;
+    }
+
+    hostname = hostname.replace(/^https?:\/\//i, '');
+    hostname = hostname.split('/')[0];
+    hostname = hostname.split(':')[0];
+
+    const match = hostname.match(
+        /^(?:[a-z0-9-]+\.)+[a-z0-9-]+\.run\.app$/i
+    );
+
+    return match ? match[0] : null;
+}
+
+async function detectCloudRunHost() {
+    try {
+        const detectedHost = extractRunAppHostname(
+            window.location.hostname
+        );
+
+        if (detectedHost) {
+            cloudRunHost = detectedHost;
+            addLog('Current server host detected');
+            updateConfigOutput();
+            return detectedHost;
+        }
+
+        cloudRunHost = null;
+        return null;
+
+    } catch (err) {
+        cloudRunHost = null;
+        return null;
+    }
+}
+
+        function formatElapsedTime() {
+            const elapsed = Math.floor((Date.now() - pageLoadTime) / 1000);
+            const h = String(Math.floor(elapsed / 3600)).padStart(2,'0');
+            const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2,'0');
+            const s = String(Math.floor(elapsed % 60)).padStart(2,'0');
+            return `[+${h}:${m}:${s}]`;
+        }
+        function addLog(message) {
+            logEntries.push(`<div class="log-entry">${formatElapsedTime()} : ${message}</div>`);
+            if (logEntries.length > MAX_LOGS) logEntries.shift();
+            elLog.innerHTML = logEntries.join('');
+            elLog.scrollTop = elLog.scrollHeight;
+        }
+       clearLogBtn.addEventListener('click', () => {
+    if (elLog.classList.contains('clearing')) return;
+    clearLogBtn.classList.add('clearing');
+    elLog.classList.add('clearing');
+
+    setTimeout(() => {
+        logEntries = [];
+        elLog.innerHTML = '';
+        elLog.classList.remove('clearing');
+        clearLogBtn.classList.remove('clearing');
+        addLog('Server event log cleared.');
+
+    }, 450);
+});
+const infoBtn = document.getElementById('infoBtn');
+const infoPopup = document.getElementById('infoPopup');
+const infoClose = document.getElementById('infoClose');
+
+infoBtn.addEventListener('click', () => {
+    infoPopup.classList.add('active');
+});
+
+infoClose.addEventListener('click', () => {
+    infoPopup.classList.remove('active');
+});
+
+infoPopup.addEventListener('click', (event) => {
+    if (event.target === infoPopup) {
+        infoPopup.classList.remove('active');
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        infoPopup.classList.remove('active');
+    }
+});
+        function getSavedStartTime() {
+            const saved = localStorage.getItem('serverStartTime');
+            if (saved) return parseInt(saved, 10);
+            const now = Date.now();
+            localStorage.setItem('serverStartTime', now);
+            return now;
+        }
+        function formatUptime(seconds) {
+            const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+            const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+            const s = String(Math.floor(seconds % 60)).padStart(2,'0');
+            return `${h}:${m}:${s}`;
+        }
+        function updateLiveUptime() {
+            if (!serverStartTime) return;
+            const elapsed = Math.floor((Date.now() - serverStartTime) / 1000);
+            elUptime.textContent = formatUptime(elapsed);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+    scaleDashboard();
+    setTimeout(() => {
+        page1.classList.remove('active');
+        page3.classList.add('active');
+        scaleDashboard();
+                
+                addLog('System Initializing...');
+                loadAllRealData();
+                setInterval(updateActivityGraph, 2000);
+                setInterval(updateLatencyStatus, 3000);
+                serverStartTime = getSavedStartTime();
+                updateLiveUptime();
+                setInterval(updateLiveUptime, 1000);
+                detectCloudRunHost();
+                fetchAllServers();
+                addLog('Server Status: READY');
+                updateConfigOutput();
+                scaleDashboard();
+            }, 1800);
+        });
+        transportCards.forEach(card => {
+            card.addEventListener('click', () => {
+                transportCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedTransport = card.dataset.transport;
+                addLog(`Transport Selected → ${selectedTransport.toUpperCase()}`);
+                clearTimeout(transportGlowTimer);
+                transportGlowTimer = setTimeout(() => {
+                    if (!selectedProtocol) {
+                        card.classList.remove('selected');
+                    }
+                }, 7000);
+                updateConfigOutput();
+            });
+        });
+        protocolCards.forEach(card => {
+    card.addEventListener('click', () => {
+
+        const protocol = card.dataset.protocol;
+
+        if (allnetMode) {
+            if (protocol !== 'vless' && protocol !== 'trojan') {
+                return;
+            }
+
+            protocolCards.forEach(c => {
+                c.classList.remove('selected');
+            });
+
+            card.classList.add('selected');
+
+            selectedProtocol = protocol;
+
+            addLog(
+                `ALLNET Protocol Selected → ${selectedProtocol.toUpperCase()}`
+            );
+
+            updateConfigOutput();
+
+            return;
+        }
+
+        protocolCards.forEach(c => {
+            c.classList.remove('selected');
+        });
+
+        card.classList.add('selected');
+
+        selectedProtocol = protocol;
+
+        addLog(
+            `Protocol Selected → ${selectedProtocol.toUpperCase()}`
+        );
+
+        clearTimeout(transportGlowTimer);
+
+        updateConfigOutput();
+    });
+});
+        addressSelect.addEventListener('change', () => {
+            addLog(`Address changed → ${addressSelect.value}`);
+            updateConfigOutput();
+        });
+        sniSelect.addEventListener('change', () => {
+            addLog(`SNI changed → ${sniSelect.value}`);
+            updateConfigOutput();
+        });
+       proxySelect.addEventListener('change', () => {
+    const selectedProxy = proxySelect.value;
+    const mappedSni = proxySniMap[selectedProxy];
+
+    if (allnetMode && mappedSni) {
+        sniSelect.value = mappedSni;
+        addLog(`Proxy changed → ${selectedProxy}`);
+        addLog(`SNI automatically set → ${mappedSni}`);
+    } else {
+        addLog(`Proxy changed → ${selectedProxy}`);
+    }
+
+    updateConfigOutput();
+});
+        allnetBtn.addEventListener('click', () => {
+    setAllnetMode();
+});
+      function setAllnetMode() {
+    allnetMode = true;
+
+    allnetBtn.classList.add('active');
+
+    addressSelect.disabled = true;
+    sniSelect.disabled = true;
+    proxySelect.disabled = false;
+
+    selectedProtocol = null;
+    selectedTransport = null;
+
+    transportCards.forEach(card => {
+        card.classList.remove('selected');
+        card.style.pointerEvents = 'none';
+        card.style.opacity = '0.35';
+    });
+
+    protocolCards.forEach(card => {
+        const protocol = card.dataset.protocol;
+
+        card.classList.remove('selected');
+
+        if (protocol === 'vless' || protocol === 'trojan') {
+            card.style.pointerEvents = 'auto';
+            card.style.opacity = '1';
+        } else {
+            card.style.pointerEvents = 'none';
+            card.style.opacity = '0.35';
+        }
+    });
+
+    addLog('ALLNET MODE ENABLED');
+
+    configOutput.textContent =
+        'Select Vless or Trojan to generate ALLNET config';
+}
+        copyConfigBtn.addEventListener('click', async () => {
+            const text = configOutput.textContent;
+
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            }
+
+            copyConfigBtn.textContent = 'COPIED ✓';
+            copyConfigBtn.classList.add('copied');
+            addLog('Configuration Copied: SUCCESS');
+
+            setTimeout(() => {
+                copyConfigBtn.textContent = 'COPY CONFIG';
+                copyConfigBtn.classList.remove('copied');
+            }, 2000);
+
+            document.querySelectorAll('.protocol-card').forEach(card => {
+    card.classList.remove('selected');
+
+    card.style.pointerEvents = 'auto';
+    card.style.opacity = '1';
+});
+
+transportCards.forEach(card => {
+    card.classList.remove('selected');
+
+    card.style.pointerEvents = 'auto';
+    card.style.opacity = '1';
+});
+
+allnetMode = false;
+allnetBtn.classList.remove('active');
+addressSelect.disabled = false;
+sniSelect.disabled = false;
+proxySelect.disabled = true;
+
+selectedTransport = null;
+selectedProtocol = null;
+
+clearTimeout(transportGlowTimer);
+});
+
+        function updateActivityGraph(currentVisitors = 0) {
+            activityHistory.shift();
+            const baseValue = Math.max(1, currentVisitors || Math.floor(Math.random() * 6) + 2);
+            activityHistory.push(baseValue * (0.4 + Math.random() * 0.6));
+            const maxValue = Math.max(...activityHistory, 1);
+            graphBars.forEach((bar, idx) => {
+                bar.style.height = `${Math.max(3, (activityHistory[idx]/maxValue)*70)}px`;
+            });
+        }
+        function updateLatencyStatus() {
+    let ping;
+
+    
+    if (Math.random() < 0.03) {
+        ping = Math.floor(Math.random() * (199 - 180 + 1)) + 180;
+    } 
+    
+    else if (Math.random() < 0.85) {
+        ping = Math.floor(Math.random() * (350 - 200 + 1)) + 200;
+    } 
+    
+    else {
+        ping = Math.floor(Math.random() * (370 - 351 + 1)) + 351;
+    }
+
+    let statusClass;
+
+    if (ping < 200) {
+        currentLatency = 'good';
+        statusClass = 'ping-green';
+    } else if (ping <= 350) {
+        currentLatency = 'medium';
+        statusClass = 'ping-yellow';
+    } else {
+        currentLatency = 'high';
+        statusClass = 'ping-red';
+    }
+
+    latencyDot.className = 'status-indicator ' + currentLatency;
+
+    logEntries.push(
+        `<div class="log-entry">
+            ${formatElapsedTime()} : [PING] Server response:
+            <span class="${statusClass}">${ping}ms</span>
+        </div>`
+    );
+
+    if (logEntries.length > MAX_LOGS) {
+        logEntries.shift();
+    }
+
+    elLog.innerHTML = logEntries.join('');
+    elLog.scrollTop = elLog.scrollHeight;
+}
+
+        function updateConfigOutput() {
+    if (selectedTransport === 'grpc') {
+        rawJsonLabel.classList.add('visible');
+    } else {
+        rawJsonLabel.classList.remove('visible');
+    }
+    if (allnetMode) {
+    if (selectedProtocol !== 'vless' && selectedProtocol !== 'trojan') {
+        configOutput.textContent =
+            'Select Vless or Trojan to generate ALLNET config';
+        return;
+    }
+
+    const template = allnetTemplates[selectedProtocol];
+
+    if (!template) {
+        configOutput.textContent =
+            'ALLNET configuration template unavailable';
+        return;
+    }
+
+    const selectedProxy = proxySelect.value;
+    const selectedProxyHost = selectedProxy.split(':')[0];
+    const mappedSni = proxySniMap[selectedProxy];
+
+    try {
+        const base64Data = template.substring(
+            'darktunnel://'.length
+        );
+
+        const decodedJson = atob(base64Data);
+        const configObject = JSON.parse(decodedJson);
+
+        let tunnelConfig = null;
+
+        if (selectedProtocol === 'vless') {
+            tunnelConfig = configObject.vlessTunnelConfig;
+        } else if (selectedProtocol === 'trojan') {
+            tunnelConfig = configObject.trojanTunnelConfig;
+        }
+
+        if (!tunnelConfig || typeof tunnelConfig !== 'object') {
+            throw new Error('Tunnel configuration not found');
+        }
+
+        if (
+            !tunnelConfig.v2rayConfig ||
+            typeof tunnelConfig.v2rayConfig !== 'object'
+        ) {
+            throw new Error('v2rayConfig not found');
+        }
+
+        if (
+            !tunnelConfig.injectConfig ||
+            typeof tunnelConfig.injectConfig !== 'object'
+        ) {
+            throw new Error('injectConfig not found');
+        }
+
+        if (mappedSni) {
+            sniSelect.value = mappedSni;
+
+            tunnelConfig.v2rayConfig.serverNameIndication = mappedSni;
+
+            tunnelConfig.injectConfig.payload =
+                `CONNECT ${mappedSni}:443 HTTP/1.1[crlf]x-connected-to: ${selectedProxyHost}[crlf]user-agent: FBAV/0.0.0[crlf]x-iorg-bsid: @Cxlvin777[crlf][crlf]`;
+        }
+
+        const detectedHeaderHost =
+            extractRunAppHostname(cloudRunHost) ||
+            'NO SERVER HOSTS';
+
+        tunnelConfig.v2rayConfig.wsHeaderHost =
+            detectedHeaderHost;
+
+        tunnelConfig.injectConfig.proxyHost =
+            selectedProxyHost;
+
+        const newBase64Data = btoa(
+            JSON.stringify(configObject)
+        );
+
+        const finalConfig =
+            'darktunnel://' + newBase64Data;
+
+        configOutput.textContent = finalConfig;
+
+        if (
+            configOutput.dataset.allnetLoggedProtocol !==
+            selectedProtocol
+        ) {
+            const protocolName =
+                selectedProtocol.toUpperCase();
+
+            addLog(
+                `ALLNET ${protocolName} selected`
+            );
+
+            configOutput.dataset.allnetLoggedProtocol =
+                selectedProtocol;
+        }
+
+    } catch (error) {
+        console.error(
+            'ALLNET configuration error:',
+            error
+        );
+
+        configOutput.textContent =
+            'Failed to modify ALLNET configuration';
+
+        addLog(
+            `ALLNET configuration error → ${error.message}`
+        );
+    }
+
+    return;
+}
+
+    const selectedAddress = addressSelect.value;
+    const selectedSni = sniSelect.value;
+    const activeHostParam = cloudRunHost;
+
+    if (!selectedTransport || !selectedProtocol) {
+        configOutput.textContent =
+            'Select Transport and Protocol to generate config';
+        return;
+    }
+
+    let template =
+        configTemplates[selectedTransport][selectedProtocol];
+
+    if (selectedProtocol === 'vmess') {
+    let vmessObj;
+
+    if (selectedTransport === 'websocket') {
+        vmessObj = { ...vmessBase.ws };
+    }
+
+    if (selectedTransport === 'grpc') {
+        vmessObj = { ...vmessBase.grpc };
+    }
+
+    if (selectedTransport === 'xhttp') {
+        vmessObj = { ...vmessBase.xh };
+    }
+
+    if (!vmessObj) {
+        configOutput.textContent = 'VMess transport configuration unavailable';
+        return;
+    }
+
+    vmessObj.add = selectedAddress;
+    vmessObj.sni = selectedSni;
+    vmessObj.host = activeHostParam;
+
+    const encoded = btoa(
+        JSON.stringify(vmessObj)
+    );
+
+    template = template
+        .replace('{{VMESS_WS}}', encoded)
+        .replace('{{VMESS_GRPC}}', encoded)
+        .replace('{{VMESS_XH}}', encoded);
+}
+    const finalConfig = template
+        .replace(/{{ADDRESS}}/g, selectedAddress)
+        .replace(/{{SNI}}/g, selectedSni)
+        .replace(/{{SELECTED_HOST}}/g, activeHostParam);
+
+    configOutput.textContent = finalConfig;
+}
+
+        async function loadAllRealData() {
+    updateActivityGraph();
+    updateLatencyStatus();
+    updateConfigOutput();
+
+    try {
+        const geoRes = await fetch(
+            'https://ipwho.is/?t=' + Date.now(),
+            {
+                cache: 'no-store'
+            }
+        );
+
+        if (!geoRes.ok) {
+            throw new Error('Geolocation request failed');
+        }
+
+        const geoData = await geoRes.json();
+
+        if (!geoData.success) {
+            throw new Error(
+                geoData.message || 'Geolocation lookup failed'
+            );
+        }
+
+        if (geoData.ip) {
+            elIP.textContent = geoData.ip;
+            elIP.classList.add('status-value');
+
+            addLog(`IP detected: ${geoData.ip}`);
+        } else {
+            elIP.textContent = 'Unavailable';
+        }
+
+        elCountry.textContent =
+            geoData.country || 'Unavailable';
+
+        elCity.textContent =
+            geoData.city || 'Unavailable';
+
+        elISP.textContent =
+            geoData.connection?.isp || 'Unavailable';
+
+       [elCountry, elCity, elISP].forEach(element => {
+    element.classList.add('status-value');
+});
+
+        addLog(
+            `Visitor location detected: ` +
+            `${geoData.city || 'Unknown'}, ` +
+            `${geoData.country || 'Unknown'}`
+        );
+
+        addLog(
+            `Visitor ISP detected: ` +
+            `${geoData.connection?.isp || 'Unknown'}`
+        );
+
+    } catch (err) {
+
+        elIP.textContent = 'Unavailable';
+        elCountry.textContent = 'Unavailable';
+        elCity.textContent = 'Unavailable';
+        elISP.textContent = 'Unavailable';
+
+        addLog('Could not retrieve visitor geolocation');
+    }
+
+
+try {
+                const res = await fetch(BACKEND_ENDPOINT);
+                if (!res.ok) throw new Error('Backend offline');
+                const data = await res.json();
+                elVisitor.textContent = data.visitors.toLocaleString();
+                elVisitor.classList.remove('status-wait');
+                elVisitor.classList.add('status-good');
+                updateActivityGraph(data.visitors);
+                serverStartTime = data.server_start || getSavedStartTime();
+                addLog('Backend connection: SUCCESS');
+            } catch {
+                let localVisitors = Number(localStorage.getItem('real_visitors') || 0);
+                const lastVisit = Number(localStorage.getItem('last_visit_ts') || 0);
+                if (Date.now() - lastVisit > 300000) {
+                    localVisitors += 1;
+                    localStorage.setItem('real_visitors', localVisitors);
+                    localStorage.setItem('last_visit_ts', Date.now());
+                }
+                elVisitor.textContent = localVisitors.toLocaleString();
+                updateActivityGraph(localVisitors);
+                serverStartTime = getSavedStartTime();
+                elVisitor.classList.remove('status-wait');
+                elVisitor.classList.add('status-good');
+                addLog('Server Monitor: ACTIVE — OPERATIONS STABLE');
+            }
+        }
+    </script>
+</body>
+</html>
