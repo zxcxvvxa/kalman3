@@ -1,0 +1,33 @@
+# VCS / editor
+.git
+.gitignore
+.gitattributes
+.vscode
+.idea
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Docs / project meta (not needed inside the image)
+README*
+LICENSE*
+*.md
+
+# Local build artifacts / scratch
+*.log
+*.tmp
+tmp/
+build/
+dist/
+
+# Secrets / local overrides - never bake these into the image
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Nothing here should be shadowing files the Dockerfile COPYs in,
+# so double-check before excluding config.json / *.cfg / *.conf broadly.
