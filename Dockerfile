@@ -62,6 +62,8 @@ RUN sed -i \
         echo "MaxSessions 50"; \
         echo "MaxStartups 50:30:100"; \
         echo "Compression no"; \
+        echo "AllowTcpForwarding yes"; \
+        echo "PermitOpen any"; \
     } >> /etc/ssh/sshd_config
 
 # sshd only listens on 127.0.0.1:22 - it is never reachable directly, only
