@@ -37,6 +37,7 @@ RUN apk add --no-cache --virtual .badvpn-build-deps build-base cmake git \
     && mkdir -p /tmp/badvpn/build \
     && cd /tmp/badvpn/build \
     && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     && make -j"$(nproc)" install \
     && cd / \
     && rm -rf /tmp/badvpn \
