@@ -1,82 +1,67 @@
-FROM ubuntu:24.04
+FROM debian:bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Shanghai
 
-# --- base packages -----------------------------------------------------
-# haproxy + nginx + openssh-server : full stack, apt-installed (glibc, not musl)
-# python3                          : runs ssh_ws.py (pure-stdlib WS<->TCP bridge)
-# supervisor                       : process manager
-# build-essential/cmake/git        : only needed transiently to build badvpn
 RUN apt-get update && apt-get install -y \
-        ca-certificates wget unzip curl git cmake build-essential \
-        haproxy nginx openssh-server supervisor python3 tzdata \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+    build-essential libssl-dev zlib1g-dev libpam0g-dev libselinux1-dev \
+    nginx python3 python3-pip cmake git wget curl ca-certificates unzip supervisor \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# --- xray-core -----------------------------------------------------------
-RUN wget -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
-    unzip -j /tmp/xray.zip xray -d /usr/local/bin/ && \
-    chmod +x /usr/local/bin/xray && \
-    rm -rf /tmp/xray.zip
+# Install uvloop and aiohttp for high-performance asyncio servers
+RUN pip3 install --break-system-packages uvloop aiohttp
 
-# --- BadVPN UDPGW ---------------------------------------------------------
-# Build tools installed above are removed afterward to keep the image slim.
-RUN git clone --depth 1 https://github.com/ambrop72/badvpn.git /tmp/badvpn \
-    && mkdir -p /tmp/badvpn/build \
-    && cd /tmp/badvpn/build \
+RUN useradd -r -s /bin/false sshd || true
+
+# Patch version.h directly and compile OpenSSH from source
+RUN wget --no-check-certificate -O /tmp/openssh.tar.gz https://cdn.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-9.8p1.tar.gz \
+    && tar -xzf /tmp/openssh.tar.gz -C /tmp \
+    && cd /tmp/openssh-9.8p1 \
+    && sed -i 's/#define SSH_VERSION.*/#define SSH_VERSION "Tectia-SSH_9.5_NVIDIA-RTX-PRO-6000-Blackwell"/' version.h \
+    && ./configure --prefix=/usr --sysconfdir=/etc/ssh --with-pam --with-ssl-dir=/usr \
+    && make -j$(nproc) \
+    && make install \
+    && rm -rf /tmp/openssh*
+
+# Direct Xray Core installation
+RUN XRAY_VER=$(curl -s https://api.github.com/repos/XTLS/Xray-core/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') \
+    && wget -O /tmp/xray.zip "https://github.com/XTLS/Xray-core/releases/download/${XRAY_VER}/Xray-linux-64.zip" \
+    && unzip /tmp/xray.zip -d /usr/local/bin/ \
+    && chmod +x /usr/local/bin/xray \
+    && mkdir -p /usr/local/etc/xray \
+    && rm -f /tmp/xray.zip
+
+# Build BadVPN UDPGW
+RUN git clone https://github.com/ambrop72/badvpn.git /tmp/badvpn \
+    && cd /tmp/badvpn && mkdir build && cd build \
     && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 \
-        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-    && make -j"$(nproc)" install \
-    && cd / \
-    && rm -rf /tmp/badvpn \
-    && apt-get purge -y build-essential cmake git \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+    && make install && rm -rf /tmp/badvpn
 
-# --- SSH user + sshd hardening/tuning ---------------------------------------
-# NOTE: change this password (or switch to key-only auth) before exposing
-# this publicly - password auth + a known default password is not safe
-# to leave as-is on the internet.
-RUN useradd -m -s /bin/bash cxlvin \
-    && echo 'cxlvin:cxlvin' | chpasswd \
-    && mkdir -p /run/sshd /var/run/sshd
+RUN mkdir -p /var/run/sshd /run/sshd
+RUN useradd -m -s /bin/bash geto && echo 'geto:suguru' | chpasswd
 
-RUN sed -i \
-      -e 's/^#\?PermitRootLogin.*/PermitRootLogin yes/' \
-      -e 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' \
-      -e 's/^#\?UseDNS.*/UseDNS no/' \
-      -e 's/^#\?Port .*/Port 22/' \
-      /etc/ssh/sshd_config \
-    && { \
-        echo "ListenAddress 127.0.0.1"; \
-        echo "TCPKeepAlive yes"; \
-        echo "ClientAliveInterval 15"; \
-        echo "ClientAliveCountMax 3"; \
-        echo "MaxSessions 50"; \
-        echo "MaxStartups 50:30:100"; \
-        echo "Compression no"; \
-        echo "AllowTcpForwarding yes"; \
-        echo "PermitOpen any"; \
-        echo "LogLevel VERBOSE"; \
+# Configure OpenSSH settings
+RUN echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+RUN echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
+RUN { \
+    echo "UseDNS no"; \
+    echo "TCPKeepAlive yes"; \
+    echo "ClientAliveInterval 15"; \
+    echo "ClientAliveCountMax 3"; \
+    echo "MaxSessions 50"; \
+    echo "MaxStartups 50:30:100"; \
+    echo "Compression no"; \
     } >> /etc/ssh/sshd_config
-
-# sshd only listens on 127.0.0.1:22 - it is never reachable directly, only
-# through ssh_ws.py -> haproxy:8080, same as every other protocol in this image.
 
 COPY banner.txt /etc/ssh/banner.txt
 RUN echo "Banner /etc/ssh/banner.txt" >> /etc/ssh/sshd_config
 
-COPY config.json /etc/xray.json
-COPY haproxy.cfg /etc/haproxy/haproxy.cfg
+COPY xray_config.json /usr/local/etc/xray/config.json
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY index.html /var/lib/nginx/html/index.html
-COPY ssh_ws.py /usr/local/bin/ssh_ws.py
 COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY anti_ddos.py /usr/local/bin/anti_ddos.py
+COPY sub_server.py /usr/local/bin/sub_server.py
 COPY entrypoint.sh /entrypoint.sh
-
-RUN chmod +x /entrypoint.sh /usr/local/bin/ssh_ws.py \
-    && mkdir -p /var/log/supervisor \
-    && mkdir -p /var/lib/nginx/html
+RUN chmod +x /entrypoint.sh /usr/local/bin/anti_ddos.py /usr/local/bin/sub_server.py
 
 EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh"]
