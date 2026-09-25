@@ -27,6 +27,21 @@ RUN wget -qO /tmp/xray.zip https://github.com/XTLS/Xray-core/releases/latest/dow
     chmod +x /usr/local/bin/xray && \
     rm -rf /tmp/xray.zip
 
+# --- BadVPN UDPGW -----------------------------------------------------------
+# Lets clients tunnel UDP (games, DNS, etc.) through the SSH connection via
+# the SSH client's own local port-forward to 127.0.0.1:7300 on this box.
+# Build tools are installed into a virtual package and removed right after
+# so they don't stick around in the final image.
+RUN apk add --no-cache --virtual .badvpn-build-deps build-base cmake git \
+    && git clone --depth 1 https://github.com/ambrop72/badvpn.git /tmp/badvpn \
+    && mkdir -p /tmp/badvpn/build \
+    && cd /tmp/badvpn/build \
+    && cmake .. -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 \
+    && make -j"$(nproc)" install \
+    && cd / \
+    && rm -rf /tmp/badvpn \
+    && apk del .badvpn-build-deps
+
 # --- SSH user + sshd hardening/tuning ---------------------------------------
 # NOTE: change this password (or switch to key-only auth) before exposing
 # this publicly - password auth + a known default password is not safe
