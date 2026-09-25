@@ -1,0 +1,24 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Secrets / local config - never commit these
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Runtime state you don't want to accidentally commit
+*.log
+/data/
+/logs/
+
+# Container build scratch, if you build locally outside Docker's own context
+build/
+dist/
